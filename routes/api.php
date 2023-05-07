@@ -33,7 +33,6 @@ Route::resource('/products', ProductController::class);
 
 Route::resource('/categories', CategoryController::class);
 
-Route::resource('/customers', CustomerController::class);
 Route::resource('/employees', EmployeeController::class);
 Auth::routes();
 
@@ -41,6 +40,23 @@ Route::get('/login', [AuthController::class,"login"]);
 Route::get('/register', [AuthController::class,"register"]);
 Route::post('/register-user', [AuthController::class,"registerUser"])->name("register-user");
 Route::post('/login-user', [AuthController::class,"loginUser"])->name("login-user");
+
+
+
+
+// Route::middleware('auth:sanctum')->prefix('/user')->group(function () {
+  
+// });
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('/customers', CustomerController::class);
+    Route::post('/logout-user', [AuthController::class,"logoutUser"])->name("logout-user");
+
+
+
+});
+
 
 
 

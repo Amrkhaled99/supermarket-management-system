@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -14,10 +15,12 @@ class AuthController extends Controller
          return "Login";
     }
 
-    function logout(){
-
-        return "Logout";
-
+    function logoutUser(Request $request){
+         $user= User::where("id",$request->id)->first();
+        Auth::logout();
+        $user->tokens()->delete();
+        return response()->json(['message' => 'Logged out successfully']);
+        
     }
 
     function register(){
@@ -71,14 +74,17 @@ class AuthController extends Controller
         ]);
 
    
-        $user =User::where('email','=',$request['email'])->first();
+        $user =User::where('email',$request->email)->first();
       
 
        if($user){
         if(Hash::check($request->password,$user->password)){
-            return "login successful" ;
+            $token=$user->createToken($user->username);
+            // return $token;
+            return response()->json(["data"=>$user ,"token"=>$token->plainTextToken]);
+            
         }else{
-         return "password not matches";
+         return "Something wrong, please try again";
         }
         }else{
             return "User Not Registered";
